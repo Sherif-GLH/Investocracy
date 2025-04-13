@@ -1,0 +1,71 @@
+# name: Deploy Investocracy on EC2
+
+# on:
+#   push:
+#     branches:
+#       - main
+
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#     # Step 1: Set up AWS credentials
+#     - name: Configure AWS credentials
+#       uses: aws-actions/configure-aws-credentials@v4
+#       with:
+#         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#         aws-region: ${{ secrets.AWS_REGION }}
+
+#     # Step 2: Check and start the EC2 instance if stopped
+#     - name: Start EC2 instance if stopped
+#       run: |
+#         INSTANCE_ID=${{ secrets.EC2_INSTANCE_ID }}
+#         INSTANCE_STATE=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query 'Reservations[0].Instances[0].State.Name' --output text)
+        
+#         if [ "$INSTANCE_STATE" == "stopped" ]; then
+#           echo "EC2 instance is stopped. Starting it..."
+#           aws ec2 start-instances --instance-ids $INSTANCE_ID
+          
+#           echo "Waiting for instance to enter 'running' state..."
+#           aws ec2 wait instance-running --instance-ids $INSTANCE_ID
+          
+#           echo "EC2 instance is now running."
+#         else
+#           echo "EC2 instance is already running."
+#         fi
+
+#     # Step 3: Set up the SSH key
+#     - name: Set up SSH key
+#       run: |
+#     # Step 4: Deploy Investocracy
+#     - name: Deploy Investocracy
+#       run: |
+#         ssh -o StrictHostKeyChecking=no -i my-key.pem ubuntu@${{ secrets.EC2_PUBLIC_IP }} << EOF
+#           cd /home/ubuntu/Investocracy
+#           git pull
+#           docker stack rm investo
+#           sleep 20
+#           docker system prune -a --volumes -f
+#           docker-compose build --no-cache
+#           docker stack deploy -c docker-compose.prod.yaml investo
+#         EOF
+        
+#     # Step 5: Stop EC2 instance after deployment
+#     - name: Stop EC2 instance
+#       run: |
+#         INSTANCE_ID=${{ secrets.EC2_INSTANCE_ID }}
+#         INSTANCE_STATE=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query 'Reservations[0].Instances[0].State.Name' --output text)
+        
+#         if [ "$INSTANCE_STATE" == "running" ]; then
+#           echo "Stopping EC2 instance..."
+#           aws ec2 stop-instances --instance-ids $INSTANCE_ID
+          
+#           echo "Waiting for instance to enter 'stopped' state..."
+#           aws ec2 wait instance-stopped --instance-ids $INSTANCE_ID
+          
+#           echo "EC2 instance has been stopped."
+#         else
+#           echo "EC2 instance is not running, no need to stop it."
+#         fi
