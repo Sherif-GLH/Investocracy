@@ -20,7 +20,6 @@ class AudioSerializer(serializers.Serializer):
 class CNBCVideoSerializer(serializers.Serializer):
     url = serializers.URLField()
     pause_duration = serializers.FloatField()
-    start_time = serializers.IntegerField()
 
 # Serializer for the 'footages' in the template
 class FootageSerializer(serializers.Serializer):
