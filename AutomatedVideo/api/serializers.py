@@ -1,40 +1,53 @@
 from rest_framework import serializers
 
+# Serializer for 'metadata' in the webhook
 class MetadataSerializer(serializers.Serializer):
     _id = serializers.CharField()
     employee = serializers.EmailField()
+    hostname = serializers.URLField()
 
-# Webhook Serializer
+# Serializer for the 'webhook' structure
 class WebhookSerializer(serializers.Serializer):
     url = serializers.URLField()
     metadata = MetadataSerializer()
-    
-class TranscriptAudioSerializer(serializers.Serializer):
-    url = serializers.URLField()
-    start_time = serializers.FloatField()
 
+# Serializer for the 'audio' in template
+class AudioSerializer(serializers.Serializer):
+    audio_path = serializers.URLField()
+    audioDuration = serializers.FloatField()
+
+# Serializer for the 'CNBCVideo' in the template
+class CNBCVideoSerializer(serializers.Serializer):
+    url = serializers.URLField()
+    pause_duration = serializers.FloatField()
+    start_time = serializers.IntegerField()
+
+# Serializer for the 'footages' in the template
+class FootageSerializer(serializers.Serializer):
+    url = serializers.URLField()
+    pause_duration = serializers.FloatField()
+
+# Serializer for the 'intro' section of the template
 class IntroSerializer(serializers.Serializer):
-    url = serializers.URLField()
-    pause_duration = serializers.FloatField()
-    with_audio = serializers.BooleanField()
+    CNBCVideo = CNBCVideoSerializer()
+    footages = FootageSerializer(many=True)
+    audio_path = serializers.URLField()
+    audioDuration = serializers.FloatField()
 
-class OutroSerializer(serializers.Serializer):
-    url = serializers.URLField()
-    pause_duration = serializers.FloatField()
-    with_audio = serializers.BooleanField()
-
+# Serializer for the content section of the template
 class ContentSerializer(serializers.Serializer):
-    url = serializers.URLField()
-    pause_duration = serializers.FloatField()
-    with_audio = serializers.BooleanField()
+    text = serializers.CharField()
+    CNBCVideo = CNBCVideoSerializer()
+    footages = FootageSerializer(many=True)
+    audio_path = serializers.URLField()
+    audioDuration = serializers.FloatField()
 
+# Serializer for the 'template' structure
 class TemplateSerializer(serializers.Serializer):
-    transcript_audio = TranscriptAudioSerializer(many=True, required=False)
-    intro = IntroSerializer(many=True, required=False)
-    content = ContentSerializer(many=True, required=False)
-    outro = OutroSerializer(many=True, required=False)
+    intro = IntroSerializer()
+    content = ContentSerializer(many=True)
 
+# Main serializer for the POST request
 class PostRequestSerializer(serializers.Serializer):
-    success = serializers.BooleanField()
     webhock = WebhookSerializer()
     template = TemplateSerializer()
