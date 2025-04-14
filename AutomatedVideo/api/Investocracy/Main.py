@@ -5,7 +5,8 @@ from moviepy import *
 def create_video(test, directory_name, video_name):
     directory_name = 'downloads'
     local_filename = f"{directory_name}/sample.mp4"
-    intro = VideoFileClip(f'{directory_name}/Logo animation 1.mov', has_mask=True)
+    audio_intro = AudioFileClip(f'{directory_name}/welcome.mp3')
+    intro = VideoFileClip(f'{directory_name}/Logo animation 1.mov', has_mask=True).with_audio(audio_intro)
     slide = VideoFileClip(f'{directory_name}/investocracy transition.mov', has_mask=True)
     gap = ColorClip(size=intro.size, color=(0, 0, 0), duration=4)
     clips = []
