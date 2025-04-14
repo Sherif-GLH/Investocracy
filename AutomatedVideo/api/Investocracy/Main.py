@@ -125,7 +125,8 @@ def create_video(test, directory_name, video_name):
             for chunk in response.iter_content(chunk_size=8192):  
                 file.write(chunk)
         audio = AudioFileClip(local_filename)
-        clips.append(new_footage)
+        new_footage_with_audio = new_footage.with_audio(audio)
+        clips.append(new_footage_with_audio)
         last_value = durations[-1]
         new = last_value + new_footage.duration
         durations.append(new)
