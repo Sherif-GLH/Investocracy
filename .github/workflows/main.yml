@@ -39,6 +39,9 @@ jobs:
     # Step 3: Set up the SSH key
     - name: Set up SSH key
       run: |
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" | base64 --decode > my-key.pem
+        chmod 600 my-key.pem
+
     # Step 4: Deploy Investocracy
     - name: Deploy Investocracy
       run: |
