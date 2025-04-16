@@ -1,6 +1,20 @@
 import os, requests, boto3
 from moviepy import *
 
+def remove_temp(directory_name):
+    try:
+        directory = directory_name
+        exception_files = ["intro investo.mov", "investocracy transition.mov", "sample.mp4"]
+        for filename in os.listdir(directory):
+            file_path = os.path.join(directory, filename)
+            # Check if the file is not the exception and is a file (not a directory)
+            if filename not in exception_files and os.path.isfile(file_path):
+                os.remove(file_path)  # Remove the file
+                print(f"Removed: {file_path}")
+        os.remove("output.mp4")
+        print("All files except exception files have been removed.")
+    except Exception as e:
+        print(f"Error removing {file_path} from instance : {str(e)}")
 
 def create_video(test, directory_name, video_name):
     directory_name = 'downloads'
@@ -147,6 +161,7 @@ def create_video(test, directory_name, video_name):
     # Export the final video
     final_video.write_videofile("output.mp4", codec="libx264", audio_codec="aac")
     path = upload_to_s3(f"output.mp4", f"Investocracy/{video_name}.mp4")
+    remove_temp(directory_name)
     return path
 def upload_to_s3(file_path, s3_path):
     s3 = boto3.client('s3')
